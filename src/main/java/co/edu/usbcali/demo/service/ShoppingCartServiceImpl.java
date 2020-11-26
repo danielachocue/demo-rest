@@ -14,56 +14,15 @@ import co.edu.usbcali.demo.repository.ShoppingCartRepository;
 
 @Service
 @Scope("singleton")
-public class ShoppingCartServiceImpl implements ShoppingCartService {
-	
+public class ShoppingCartServiceImpl implements ShoppingCartService{
+
 	@Autowired
-	ShoppingCartRepository shoppingcartRepository;
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<ShoppingCart> findAll(){
-		return shoppingcartRepository.findAll();
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public Optional<ShoppingCart> findById(Integer id) throws Exception {
-		return shoppingcartRepository.findById(id);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public Long count() {
-		return shoppingcartRepository.count();
-	}
-
-	@Override
-	public void validate(ShoppingCart entity) throws Exception {
-		
-		//validaciones
-		if(entity==null) {
-			throw new Exception("El shoppingcart es nulo");
-		}
-		
-		if(entity.getCustomer()==null || entity.getCustomer() == null) {
-			throw new Exception("El customer es nulo");
-		}
+	ShoppingCartRepository shoppingCartRepository;
 	
-		if(entity.getEnable()==null || entity.getEnable().isBlank()==true) {
-			throw new Exception("El enable es nulo");
-		}
-		
-		if(entity.getItems()==null || entity.getItems() < 0) {
-			throw new Exception("El item es vacio");
-		}
-		
-		if(entity.getPaymentMethod()==null || entity.getPaymentMethod()==null) {
-			throw new Exception("El payMethod es vacio");
-		}
-		
-		if(entity.getTotal()==null || entity.getTotal() < 0) {
-			throw new Exception("El total es nulo");
-		}
+	@Override
+	@Transactional(readOnly = true)
+	public List<ShoppingCart> findAll() {
+		return shoppingCartRepository.findAll();
 	}
 
 	@Override
@@ -71,58 +30,89 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 	public ShoppingCart save(ShoppingCart entity) throws Exception {
 		validate(entity);
 		
-		if(entity==null) {
-			throw new Exception("El shoppingcart es nulo");
-		}
-		
-		return shoppingcartRepository.save(entity);
+		return shoppingCartRepository.save(entity);
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public ShoppingCart update(ShoppingCart entity) throws Exception {
-		
 		validate(entity);
-		
-		if(entity==null) {
-			throw new Exception("El shoppingcart es nulo");
+		if(entity.getCarId()==null||entity.getCarId()<0) {
+			throw new Exception("El carId es obligatorio");
 		}
-		
-		return shoppingcartRepository.save(entity);
+		if(shoppingCartRepository.existsById(entity.getCarId())==false) {
+			throw new Exception("El shoppingCart con id: "+entity.getCarId()+" no existe");
+		}
+		return shoppingCartRepository.save(entity);
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void delete(ShoppingCart entity) throws Exception {
-		
 		if(entity==null) {
-			throw new Exception("El shoppingcart es nulo");
+			throw new Exception("El ShoppingCart es nulo");
 		}
-		
-		if(entity.getCarId()==null) {
-			throw new Exception("El shoppingcart es obligatorio");
+		if(entity.getCarId()==null||entity.getCarId()<0) {
+			throw new Exception("El carId es obligatorio");
 		}
-		//si no existe lanza error
-		if(shoppingcartRepository.existsById(entity.getCarId())==false) {
-			throw new Exception("El shoppingCart con CarId: "+entity.getCarId()+" NO existe, no se puede borrar");
+		if(shoppingCartRepository.existsById(entity.getCarId())==false) {
+			throw new Exception("El shoppingCart con id: "+entity.getCarId()+" no existe");
 		}
-
-		
-		shoppingcartRepository.deleteById(entity.getCarId());
+		shoppingCartRepository.findById(entity.getCarId()).ifPresent(shoppingCart->{
+			if(shoppingCart.getShoppingProducts()!=null&&shoppingCart.getShoppingProducts().isEmpty()==false) {
+				throw new RuntimeException(
+						"El ShoppingCart con id: " + entity.getCarId() + " tiene ShoppingPorducts, no se puede borrar");
+			}
+		});
+		shoppingCartRepository.deleteById(entity.getCarId());
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 	public void deleteById(Integer id) throws Exception {
-		
-		//valida CarId
-		if(id==null || id<0) {
-			throw new Exception("El carid es obligatorio");
+		if (id == null || id < 0) {
+			throw new Exception("El payId es obligatorio");
 		}
-		
-		if(shoppingcartRepository.existsById(id)) {
-			delete(shoppingcartRepository.findById(id).get());
+		if (shoppingCartRepository.existsById(id)) {
+			delete(shoppingCartRepository.findById(id).get());
 		}
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<ShoppingCart> findById(Integer id) throws Exception {
+		return shoppingCartRepository.findById(id);
+	}
+
+	@Override
+	public void validate(ShoppingCart entity) throws Exception {
+		if (entity == null) {
+			throw new Exception("El ShoppingCart es nulo");
+		}
+		if( entity.getCustomer()==null) {
+			throw new Exception("El customer es obligatorio");
+		}
+		if(entity.getEnable()==null||entity.getEnable().isBlank()) {
+			throw new Exception("El enable es obligatorio");
+		}
+		if(entity.getItems()==null||entity.getItems()<0) {
+			throw new Exception("La cantidad de items es obligatorio");
+		}
+		if(entity.getTotal()==null||entity.getTotal()<0) {
+			throw new Exception("El total es obligatorio");
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Long count() {
+		return shoppingCartRepository.count();
+	}
+
+	@Override
+	public List<ShoppingCart> findShcaByEmail(String email) {
+		return shoppingCartRepository.findShcaByEmail(email);
+	}
+
 }
+

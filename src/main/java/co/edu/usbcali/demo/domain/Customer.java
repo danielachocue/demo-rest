@@ -14,17 +14,12 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-
-
-
-
 @Entity
 @Table(name = "customer", schema = "public")
 public class Customer implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-
 	@NotNull
 	@Email
 	@Size(min=3,max=255)
@@ -60,13 +55,19 @@ public class Customer implements java.io.Serializable {
 	private String token;
 	
 
+	@NotNull
+	@Size(min = 1, max = 1)
+	@NotEmpty
+	private String role;
+	
+
 	private List<ShoppingCart> shoppingCarts = new ArrayList<ShoppingCart>(0);
 
 	public Customer() {
 	}
 
 	public Customer(String email, String address, String enable, String name, String phone,
-			List<ShoppingCart> shoppingCarts, String token) {
+			List<ShoppingCart> shoppingCarts, String token, String role) {
 		this.email = email;
 		this.address = address;
 		this.enable = enable;
@@ -74,6 +75,7 @@ public class Customer implements java.io.Serializable {
 		this.phone = phone;
 		this.token = token;
 		this.shoppingCarts = shoppingCarts;
+		this.role = role;
 	}
 
 	@Id
@@ -129,6 +131,14 @@ public class Customer implements java.io.Serializable {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+	@Column(name = "role", nullable = false)
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	//relacion de uno a muchos con Shoppingcart 

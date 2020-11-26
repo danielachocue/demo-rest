@@ -58,7 +58,7 @@ public ShoppingCart(Integer carId, Customer customer, PaymentMethod paymentMetho
 //llave primaria
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "car_id", unique = true, nullable = false)
+	@Column(name = "car_id", unique = true)
 	public Integer getCarId() {
 		return this.carId;
 	}
