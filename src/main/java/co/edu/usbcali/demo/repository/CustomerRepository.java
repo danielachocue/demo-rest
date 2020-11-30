@@ -1,6 +1,7 @@
 package co.edu.usbcali.demo.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,5 +35,8 @@ public interface CustomerRepository extends JpaRepository<Customer, String> {
 	
 	//Selecciona el nombre del parametro o el email, cualquiera de los dos que exista
 	public List<Customer> findByNameOrEmail(String name, String email);
+	
+	//modo automatico (por nombre del metodo)
+	public Optional<Customer> findByEmailAndToken(String email,String token);
 
 }

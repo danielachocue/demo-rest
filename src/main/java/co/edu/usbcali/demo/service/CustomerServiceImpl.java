@@ -132,6 +132,14 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 		
 	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public Optional<Customer> findByEmailAndToken(String email, String token) {
+		return customerRepository.findByEmailAndToken(email, token);
+	}
+
+
 	
 }
 
