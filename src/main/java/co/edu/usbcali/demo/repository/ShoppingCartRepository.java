@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
 import co.edu.usbcali.demo.domain.ShoppingCart;
 
-public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Integer>{
+public interface ShoppingCartRepository extends JpaRepository<ShoppingCart,Integer> {
 	
-	@Query("SELECT shc FROM ShoppingCart shc WHERE shc.customer.email=:email")
-	public List<ShoppingCart> findShcaByEmail(String email);
-
+	@Query("SELECT shpc FROM ShoppingCart shpc WHERE shpc.customer.email=:email")
+	public List<ShoppingCart> findShpCartByEmail(String email);
 }

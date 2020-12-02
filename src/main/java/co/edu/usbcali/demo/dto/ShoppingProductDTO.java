@@ -16,6 +16,7 @@ public class ShoppingProductDTO  {
     private String productId;
     @NotNull
     private Integer shoppingCartId;
+    
 
 	public Integer getQuantity() {
 		return quantity;
